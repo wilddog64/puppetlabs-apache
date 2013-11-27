@@ -188,19 +188,34 @@ define apache::vhost(
 
   # This ensures that the docroot exists
   # But enables it to be specified across multiple vhost resources
+  File {
+    owner => $docroot_owner,
+    group => $docroot_group,
+  }
+
   if ! defined(File[$docroot]) {
+    exec { $docroot:
+      command => "mkdir -p ${docroot}",
+      creates => $docroot,
+    }
+
     file { $docroot:
       ensure  => directory,
-      owner   => $docroot_owner,
-      group   => $docroot_group,
+      recurse => true,
       require => Package['httpd'],
     }
   }
 
   # Same as above, but for logroot
   if ! defined(File[$logroot]) {
+    exec { $logroot:
+      command => "mkdir -p ${logroot}",
+      creates => $logroot,
+    }
+
     file { $logroot:
       ensure  => directory,
+      recurse => true,
       require => Package['httpd'],
     }
   }
