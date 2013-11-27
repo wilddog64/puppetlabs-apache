@@ -120,7 +120,7 @@ class apache (
     path => '/bin:/sbin:/usr/bin:/usr/sbin',
   }
 
-  exec { "mkdir ${confd_dir}":
+  exec { "mkdir -p ${confd_dir}":
     creates => $confd_dir,
     require => Package['httpd'],
   }
@@ -133,7 +133,7 @@ class apache (
   }
 
   if ! defined(File[$mod_dir]) {
-    exec { "mkdir ${mod_dir}":
+    exec { "mkdir -p ${mod_dir}":
       creates => $mod_dir,
       require => Package['httpd'],
     }
@@ -148,7 +148,7 @@ class apache (
 
   if $mod_enable_dir and ! defined(File[$mod_enable_dir]) {
     $mod_load_dir = $mod_enable_dir
-    exec { "mkdir ${mod_enable_dir}":
+    exec { "mkdir -p ${mod_enable_dir}":
       creates => $mod_enable_dir,
       require => Package['httpd'],
     }
@@ -164,7 +164,7 @@ class apache (
   }
 
   if ! defined(File[$vhost_dir]) {
-    exec { "mkdir ${vhost_dir}":
+    exec { "mkdir -p ${vhost_dir}":
       creates => $vhost_dir,
       require => Package['httpd'],
     }

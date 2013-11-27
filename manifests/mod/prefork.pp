@@ -34,7 +34,7 @@ class apache::mod::prefork (
   file { "${apache::mod_dir}/prefork.conf":
     ensure  => file,
     content => template('apache/mod/prefork.conf.erb'),
-    require => Exec["mkdir ${apache::mod_dir}"],
+    require => Exec["mkdir -p ${apache::mod_dir}"],
     before  => File[$apache::mod_dir],
     notify  => Service['httpd'],
   }

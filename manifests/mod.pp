@@ -75,7 +75,7 @@ define apache::mod (
     content => "LoadModule ${_id} ${_path}\n",
     require => [
       Package['httpd'],
-      Exec["mkdir ${mod_dir}"],
+      Exec["mkdir -p ${mod_dir}"],
     ],
     before  => File[$mod_dir],
     notify  => Service['httpd'],
@@ -92,7 +92,7 @@ define apache::mod (
       mode    => '0644',
       require => [
         File["${mod}.load"],
-        Exec["mkdir ${enable_dir}"],
+        Exec["mkdir -p ${enable_dir}"],
       ],
       before  => File[$enable_dir],
       notify  => Service['httpd'],
@@ -110,7 +110,7 @@ define apache::mod (
         mode    => '0644',
         require => [
           File["${mod}.conf"],
-          Exec["mkdir ${enable_dir}"],
+          Exec["mkdir -p ${enable_dir}"],
         ],
         before  => File[$enable_dir],
         notify  => Service['httpd'],
