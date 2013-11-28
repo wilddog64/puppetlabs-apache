@@ -19,11 +19,16 @@
 #   to /var/log/<apache log location>/
 # - The $access_log specifies if *_access.log directives should be configured.
 # - The $ensure specifies if vhost file is present or absent.
-# - The $request_headers is a list of RequestHeader statement strings as per http://httpd.apache.org/docs/2.2/mod/mod_headers.html#requestheader
-# - $aliases is a list of Alias hashes for mod_alias as per http://httpd.apache.org/docs/current/mod/mod_alias.html
-#   each statement is a hash in the form of { alias => '/alias', path => '/real/path/to/directory' }
-# - $directories is a lost of hashes for creating <Directory> statements as per http://httpd.apache.org/docs/2.2/mod/core.html#directory
-#   each statement is a hash in the form of { path => '/path/to/directory', <directive> => <value>}
+# - The $request_headers is a list of RequestHeader statement strings as per
+#   http://httpd.apache.org/docs/2.2/mod/mod_headers.html#requestheader
+# - $aliases is a list of Alias hashes for mod_alias as per
+#   http://httpd.apache.org/docs/current/mod/mod_alias.html
+#   each statement is a hash in the form of
+#   { alias => '/alias', path => '/real/path/to/directory' }
+# - $directories is a lost of hashes for creating <Directory> statements as per
+#   http://httpd.apache.org/docs/2.2/mod/core.html#directory
+#   each statement is a hash in the form of
+#   { path => '/path/to/directory', <directive> => <value>}
 #   see README.md for list of supported directives.
 #
 # Actions:
@@ -136,9 +141,11 @@ define apache::vhost(
     $fastcgi_dir                 = undef,
     $additional_includes         = [],
   ) {
-  # The base class must be included first because it is used by parameter defaults
+  # The base class must be included first because it is used by parameter
+  # defaults
   if ! defined(Class['apache']) {
-    fail('You must include the apache base class before using any apache defined resources')
+    fail('You must include the apache base class before using any apache
+          defined resources')
   }
   $apache_name = $apache::params::apache_name
 
@@ -165,15 +172,20 @@ define apache::vhost(
   }
 
   if $access_log_file and $access_log_pipe {
-    fail("Apache::Vhost[${name}]: 'access_log_file' and 'access_log_pipe' cannot be defined at the same time")
+    fail("Apache::Vhost[${name}]: 'access_log_file' and 'access_log_pipe'
+          cannot be defined at the same time")
   }
 
   if $error_log_file and $error_log_pipe {
-    fail("Apache::Vhost[${name}]: 'error_log_file' and 'error_log_pipe' cannot be defined at the same time")
+    fail("Apache::Vhost[${name}]: 'error_log_file' and 'error_log_pipe' cannot
+          be defined at the same time")
   }
 
   if $fallbackresource {
-    validate_re($fallbackresource, '^/|disabled', 'Please make sure fallbackresource starts with a / (or is "disabled")')
+    validate_re($fallbackresource
+              ,'^/|disabled'
+              ,'Please make sure fallbackresource starts with a /
+                (or is "disabled")')
   }
 
   if $ssl and $ensure == 'present' {
@@ -268,7 +280,8 @@ define apache::vhost(
     } else {
       $nvh_addr_port = $ip
       if ! $servername and ! $ip_based {
-        fail("Apache::Vhost[${name}]: must pass 'ip' and/or 'port' parameters for name-based vhosts")
+        fail("Apache::Vhost[${name}]: must pass 'ip' and/or 'port' parameters
+             for name-based vhosts")
       }
     }
   } else {
@@ -278,20 +291,25 @@ define apache::vhost(
     } else {
       $nvh_addr_port = $name
       if ! $servername {
-        fail("Apache::Vhost[${name}]: must pass 'ip' and/or 'port' parameters, and/or 'servername' parameter")
+        fail("Apache::Vhost[${name}]: must pass 'ip' and/or 'port' parameters,
+             and/or 'servername' parameter")
       }
     }
   }
   if $add_listen {
     if $ip and defined(Apache::Listen[$port]) {
-      fail("Apache::Vhost[${name}]: Mixing IP and non-IP Listen directives is not possible; check the add_listen parameter of the apache::vhost define to disable this")
+      fail("Apache::Vhost[${name}]: Mixing IP and non-IP Listen directives is
+            not possible; check the add_listen parameter of the apache::vhost
+            define to disable this")
     }
-    if ! defined(Apache::Listen[$listen_addr_port]) and $listen_addr_port and $ensure == 'present' {
+    if ! defined(Apache::Listen[$listen_addr_port])
+          and $listen_addr_port and $ensure == 'present' {
       apache::listen { $listen_addr_port: }
     }
   }
   if ! $ip_based {
-    if ! defined(Apache::Namevirtualhost[$nvh_addr_port]) and $ensure == 'present' {
+    if ! defined(Apache::Namevirtualhost[$nvh_addr_port])
+        and $ensure == 'present' {
       apache::namevirtualhost { $nvh_addr_port: }
     }
   }
@@ -304,7 +322,8 @@ define apache::vhost(
   }
 
   # Load mod_alias if needed and not yet loaded
-  if ($scriptalias or $scriptaliases != []) or ($redirect_source and $redirect_dest) {
+  if ($scriptalias or $scriptaliases != [])
+    or ($redirect_source and $redirect_dest) {
     if ! defined(Class['apache::mod::alias']) {
       include apache::mod::alias
     }
